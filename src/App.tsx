@@ -16,6 +16,7 @@ export default function App() {
     revokedIds,
     addIntegrations,
     revokeIntegration,
+    resetToDemo,
     selectedId,
     setSelectedId,
   } = useIntegrations();
@@ -47,6 +48,11 @@ export default function App() {
     },
     [revokeIntegration]
   );
+
+  const handleLoadDemo = useCallback(() => {
+    resetToDemo();
+    trackEvent('demo_data_loaded');
+  }, [resetToDemo]);
 
   const handleItemClick = useCallback(
     (id: string) => {
@@ -102,16 +108,29 @@ export default function App() {
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-8 space-y-6">
         {/* Kill List Queue Header */}
         <section aria-label="Upload and manage integrations">
-          <div className="flex items-center justify-between gap-4 mb-6">
+          <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-text tracking-tight">Kill List Queue</h2>
               <p className="text-sm text-text-faint mt-1">
                 {integrations.length === 0
-                  ? 'Upload your integrations CSV to get started'
+                  ? 'Load demo data or upload your integrations CSV'
                   : `${totalActive} integration${totalActive !== 1 ? 's' : ''} pending review`}
               </p>
             </div>
-            <CSVUploader onUpload={handleUpload} />
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleLoadDemo}
+                className="group inline-flex items-center gap-1.5 h-10 px-4 bg-surface-raised border border-primary/25 text-primary text-sm font-medium rounded-lg hover:bg-primary/10 hover:border-primary/40 active:scale-[0.98] transition-all duration-150 select-none focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 focus:ring-offset-surface"
+                aria-label="Load demo data"
+              >
+                <svg className="h-3.5 w-3.5 transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+                Load demo data
+              </button>
+              <CSVUploader onUpload={handleUpload} />
+            </div>
           </div>
 
           {/* Skip Notification */}
