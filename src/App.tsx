@@ -16,7 +16,6 @@ export default function App() {
     revokedIds,
     addIntegrations,
     revokeIntegration,
-    resetToDemo,
     selectedId,
     setSelectedId,
   } = useIntegrations();
@@ -49,11 +48,6 @@ export default function App() {
     [revokeIntegration]
   );
 
-  const handleLoadDemo = useCallback(() => {
-    resetToDemo();
-    trackEvent('demo_data_loaded');
-  }, [resetToDemo]);
-
   const handleItemClick = useCallback(
     (id: string) => {
       const newSelected = selectedId === id ? null : id;
@@ -76,8 +70,8 @@ export default function App() {
         <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
-              <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+              <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             </div>
             <h1 className="text-base font-semibold text-text tracking-tight">AccessDecay</h1>
@@ -106,29 +100,18 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-8 space-y-6">
-        {/* Kill List Queue Header */}
-        <section aria-label="Upload and manage integrations">
+        {/* Kill List Queue — THE interface */}
+        <section aria-label="Kill list queue">
           <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-text tracking-tight">Kill List Queue</h2>
               <p className="text-sm text-text-faint mt-1">
                 {integrations.length === 0
-                  ? 'Load demo data or upload your integrations CSV'
+                  ? 'No integrations loaded yet'
                   : `${totalActive} integration${totalActive !== 1 ? 's' : ''} pending review`}
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={handleLoadDemo}
-                className="group inline-flex items-center gap-1.5 h-10 px-4 bg-surface-raised border border-primary/25 text-primary text-sm font-medium rounded-lg hover:bg-primary/10 hover:border-primary/40 active:scale-[0.98] transition-all duration-150 select-none focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 focus:ring-offset-surface"
-                aria-label="Load demo data"
-              >
-                <svg className="h-3.5 w-3.5 transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                </svg>
-                Load demo data
-              </button>
               <CSVUploader onUpload={handleUpload} />
             </div>
           </div>

@@ -9,6 +9,14 @@ interface KillListItemProps {
   onClick: (id: string) => void;
 }
 
+function getOwnerDisplayName(email: string): string {
+  const local = email.split('@')[0];
+  return local
+    .split('.')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
 function getSeverityColors(score: number): { border: string; bg: string; text: string; glow: string } {
   if (score >= 80) return {
     border: 'border-l-severity-high',
@@ -94,6 +102,14 @@ export function KillListItem({
               <span className="text-xs text-text-faint tabular-nums">
                 {integration.days_dormant}d dormant
               </span>
+              {!integration.owner_active && (
+                <>
+                  <span className="w-1 h-1 rounded-full bg-severity-high" aria-hidden="true"></span>
+                  <span className="text-xs text-severity-high font-medium">
+                    {getOwnerDisplayName(integration.owner_email)} left
+                  </span>
+                </>
+              )}
             </div>
           </div>
 

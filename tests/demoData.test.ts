@@ -49,16 +49,28 @@ describe('demoData', () => {
     expect(DEMO_INTEGRATIONS[0].integration_name).not.toBe('MODIFIED');
   });
 
-  it('includes realistic well-known SaaS services', () => {
+  it('includes visceral well-known SaaS services (Slack, Jira, Notion)', () => {
     const services = DEMO_INTEGRATIONS.map((i) => i.service);
-    expect(services).toContain('Zapier');
-    expect(services).toContain('Okta');
-    expect(services).toContain('AWS');
+    expect(services).toContain('Slack');
+    expect(services).toContain('Jira');
+    expect(services).toContain('Notion');
+    expect(services).toContain('Salesforce');
+    expect(services).toContain('GitHub');
   });
 
   it('includes varied data access levels spanning critical to low', () => {
     const levels = new Set(DEMO_INTEGRATIONS.map((i) => i.data_access_level));
     // At least 2 distinct access levels for variety
     expect(levels.size).toBeGreaterThanOrEqual(2);
+  });
+
+  it('top-risk integrations have inactive owners for visceral urgency', () => {
+    const inactive = DEMO_INTEGRATIONS.filter((i) => !i.owner_active);
+    // At least 3 inactive owners to create urgency
+    expect(inactive.length).toBeGreaterThanOrEqual(3);
+    // All inactive owners have high access levels
+    inactive.forEach((i) => {
+      expect(i.data_access_level).toBeGreaterThanOrEqual(4);
+    });
   });
 });

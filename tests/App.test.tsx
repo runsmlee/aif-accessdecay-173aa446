@@ -10,10 +10,10 @@ describe('App', () => {
 
   it('auto-loads demo data on first visit when no stored data exists', () => {
     render(<App />);
-    // Demo integrations should appear immediately — no empty state
-    expect(screen.getByText('Okta SSO Bridge')).toBeInTheDocument();
-    expect(screen.getByText('Zapier Full OAuth')).toBeInTheDocument();
-    expect(screen.getByText('Salesforce Admin Sync')).toBeInTheDocument();
+    // Demo integrations with visceral SaaS names should appear immediately
+    expect(screen.getByText('Slack Workspace Admin')).toBeInTheDocument();
+    expect(screen.getByText('Notion Full Workspace Sync')).toBeInTheDocument();
+    expect(screen.getByText('Jira System Webhooks')).toBeInTheDocument();
   });
 
   it('does NOT show empty state when demo data auto-loads', () => {
@@ -21,10 +21,10 @@ describe('App', () => {
     expect(screen.queryByText(/no integrations yet/i)).not.toBeInTheDocument();
   });
 
-  it('renders Load demo data button', () => {
+  it('renders "Use your own data" upload button', () => {
     render(<App />);
-    const btn = screen.getByRole('button', { name: /load demo data/i });
-    expect(btn).toBeInTheDocument();
+    const label = screen.getByText(/use your own data/i);
+    expect(label).toBeInTheDocument();
   });
 
   it('shows active count from demo data in header', () => {
@@ -32,7 +32,24 @@ describe('App', () => {
     expect(screen.getByText(/10 active/i)).toBeInTheDocument();
   });
 
-  it('resets to demo data when Load demo data is clicked after revoking', async () => {
+  it('shows departed employee names on critical items', () => {
+    render(<App />);
+    // Top items have inactive owners — their names should be visible
+    expect(screen.getByText(/Sarah Chen left/i)).toBeInTheDocument();
+    expect(screen.getByText(/Marcus Rivera left/i)).toBeInTheDocument();
+  });
+
+  it('persists demo data to localStorage after auto-load', () => {
+    render(<App />);
+
+    // Check that localStorage has data
+    const stored = localStorage.getItem('accessdecay-integrations');
+    expect(stored).not.toBeNull();
+    const parsed = JSON.parse(stored as string);
+    expect(parsed.length).toBe(10);
+  });
+
+  it('allows revoking an integration from the kill list', async () => {
     const user = userEvent.setup();
     render(<App />);
 
@@ -46,23 +63,5 @@ describe('App', () => {
 
     // Active count should decrease
     expect(screen.getByText(/9 active/i)).toBeInTheDocument();
-
-    // Click "Load demo data" to reset
-    await user.click(screen.getByRole('button', { name: /load demo data/i }));
-
-    // Should be back to full demo data
-    const restoredButtons = screen.getAllByRole('button', { name: /revoke/i });
-    expect(restoredButtons.length).toBe(initialCount);
-    expect(screen.getByText(/10 active/i)).toBeInTheDocument();
-  });
-
-  it('persists demo data to localStorage after auto-load', () => {
-    render(<App />);
-
-    // Check that localStorage has data
-    const stored = localStorage.getItem('accessdecay-integrations');
-    expect(stored).not.toBeNull();
-    const parsed = JSON.parse(stored as string);
-    expect(parsed.length).toBe(10);
   });
 });
