@@ -7,6 +7,7 @@ interface KillListProps {
   onRevoke: (id: string) => void;
   onItemClick: (id: string) => void;
   selectedId: string | null;
+  isDemo: boolean;
 }
 
 export function KillList({
@@ -15,6 +16,7 @@ export function KillList({
   onRevoke,
   onItemClick,
   selectedId,
+  isDemo,
 }: KillListProps) {
   // Sort by descending risk score (defensive - integrations should already be sorted)
   const sorted = [...integrations].sort((a, b) => {
@@ -25,19 +27,7 @@ export function KillList({
   const revokedItems = sorted.filter((i) => revokedIds.includes(i.id));
 
   if (integrations.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
-        <div className="w-16 h-16 rounded-2xl bg-surface-raised border border-border flex items-center justify-center mb-5">
-          <svg className="h-8 w-8 text-text-faint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-        </div>
-        <p className="text-sm font-medium text-text-secondary">No integrations yet</p>
-        <p className="text-xs text-text-faint mt-1.5 text-center max-w-[280px] leading-relaxed">
-          Upload a CSV of your SaaS integrations to generate a risk-ranked kill list
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -66,6 +56,7 @@ export function KillList({
                   isSelected={selectedId === integration.id}
                   onRevoke={onRevoke}
                   onClick={onItemClick}
+                  isDemo={isDemo}
                 />
               </div>
             ))}
@@ -104,6 +95,7 @@ export function KillList({
                 isSelected={selectedId === integration.id}
                 onRevoke={onRevoke}
                 onClick={onItemClick}
+                isDemo={false}
               />
             ))}
           </ul>

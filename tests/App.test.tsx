@@ -11,9 +11,9 @@ describe('App', () => {
   it('auto-loads demo data on first visit when no stored data exists', () => {
     render(<App />);
     // Demo integrations with visceral SaaS names should appear immediately
-    expect(screen.getByText('Slack Workspace Admin')).toBeInTheDocument();
-    expect(screen.getByText('Notion Full Workspace Sync')).toBeInTheDocument();
-    expect(screen.getByText('Jira System Webhooks')).toBeInTheDocument();
+    expect(screen.getByText('Slack Bot Token')).toBeInTheDocument();
+    expect(screen.getByText('Jira Webhook to deprecated service')).toBeInTheDocument();
+    expect(screen.getByText('Notion Workspace Sync')).toBeInTheDocument();
   });
 
   it('does NOT show empty state when demo data auto-loads', () => {
@@ -21,15 +21,10 @@ describe('App', () => {
     expect(screen.queryByText(/no integrations yet/i)).not.toBeInTheDocument();
   });
 
-  it('renders "Use your own data" upload button', () => {
+  it('shows demo CTA banner on first visit', () => {
     render(<App />);
-    const label = screen.getByText(/use your own data/i);
-    expect(label).toBeInTheDocument();
-  });
-
-  it('shows active count from demo data in header', () => {
-    render(<App />);
-    expect(screen.getByText(/10 active/i)).toBeInTheDocument();
+    expect(screen.getByText(/this is a demo/i)).toBeInTheDocument();
+    expect(screen.getByText(/upload your csv to see your real kill list/i)).toBeInTheDocument();
   });
 
   it('shows departed employee names on critical items', () => {
@@ -46,22 +41,30 @@ describe('App', () => {
     const stored = localStorage.getItem('accessdecay-integrations');
     expect(stored).not.toBeNull();
     const parsed = JSON.parse(stored as string);
-    expect(parsed.length).toBe(10);
+    expect(parsed.length).toBe(7);
   });
 
-  it('allows revoking an integration from the kill list', async () => {
+  it('shows demo revoke message when clicking Revoke in demo mode', async () => {
     const user = userEvent.setup();
     render(<App />);
 
     // Verify demo data loaded
     const revokeButtons = screen.getAllByRole('button', { name: /revoke/i });
-    const initialCount = revokeButtons.length;
-    expect(initialCount).toBe(10);
+    expect(revokeButtons.length).toBe(7);
 
-    // Revoke the first item
+    // Click the first revoke button (demo mode)
     await user.click(revokeButtons[0]);
 
-    // Active count should decrease
-    expect(screen.getByText(/9 active/i)).toBeInTheDocument();
+    // Should show the demo message instead of actually revoking
+    expect(screen.getByText(/upload your csv to revoke real integrations/i)).toBeInTheDocument();
+
+    // Active count should NOT decrease in demo mode (no header count shown)
+    expect(screen.queryByText(/6 active/i)).not.toBeInTheDocument();
+  });
+
+  it('renders 7 demo integrations', () => {
+    render(<App />);
+    const revokeButtons = screen.getAllByRole('button', { name: /revoke/i });
+    expect(revokeButtons).toHaveLength(7);
   });
 });

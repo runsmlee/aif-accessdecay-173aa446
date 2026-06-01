@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { KillList } from '../src/components/KillList';
 import type { ScoredIntegration } from '../src/types';
@@ -27,17 +27,18 @@ function makeScored(overrides: Partial<ScoredIntegration> = {}): ScoredIntegrati
 }
 
 describe('KillList', () => {
-  it('renders empty state with prompt to upload CSV when no integrations exist', () => {
-    render(
+  it('renders nothing when no integrations exist (no empty state)', () => {
+    const { container } = render(
       <KillList
         integrations={[]}
         revokedIds={[]}
         onRevoke={vi.fn()}
         onItemClick={vi.fn()}
         selectedId={null}
+        isDemo={true}
       />
     );
-    expect(screen.getByText(/upload a csv/i)).toBeInTheDocument();
+    expect(container.innerHTML).toBe('');
   });
 
   it('renders list items sorted by descending risk score', () => {
@@ -53,6 +54,7 @@ describe('KillList', () => {
         onRevoke={vi.fn()}
         onItemClick={vi.fn()}
         selectedId={null}
+        isDemo={true}
       />
     );
     const listItems = screen.getAllByRole('listitem');
@@ -71,6 +73,7 @@ describe('KillList', () => {
         onRevoke={vi.fn()}
         onItemClick={vi.fn()}
         selectedId={null}
+        isDemo={true}
       />
     );
     expect(screen.getByText('Test Integration')).toBeInTheDocument();
@@ -79,22 +82,45 @@ describe('KillList', () => {
     expect(screen.getByRole('button', { name: /revoke/i })).toBeInTheDocument();
   });
 
-  it('clicking "Revoke" removes item from active list and shows "Revoked" badge', async () => {
+  it('clicking "Revoke" in demo mode shows upload message instead of revoking', async () => {
     const onRevoke = vi.fn();
-    const items = [makeScored({ id: 'revoke-me' })];
+    const items = [makeScored({ id: 'demo-1' })];
     render(
       <KillList
         integrations={items}
-        revokedIds={['revoke-me']}
+        revokedIds={[]}
         onRevoke={onRevoke}
         onItemClick={vi.fn()}
         selectedId={null}
+        isDemo={true}
       />
     );
-    // The item should be in the revoked section with a "Revoked" badge
-    expect(screen.getAllByText(/revoked/i).length).toBeGreaterThanOrEqual(1);
-    // No revoke button for already-revoked items
-    expect(screen.queryByRole('button', { name: /revoke revoke-me/i })).not.toBeInTheDocument();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /revoke/i }));
+
+    // Should show demo message
+    expect(screen.getByText(/upload your csv to revoke real integrations/i)).toBeInTheDocument();
+    // Should NOT call onRevoke
+    expect(onRevoke).not.toHaveBeenCalled();
+  });
+
+  it('clicking "Revoke" in real mode calls onRevoke callback', async () => {
+    const onRevoke = vi.fn();
+    const items = [makeScored({ id: 'real-1' })];
+    render(
+      <KillList
+        integrations={items}
+        revokedIds={[]}
+        onRevoke={onRevoke}
+        onItemClick={vi.fn()}
+        selectedId={null}
+        isDemo={false}
+      />
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /revoke test integration/i }));
+
+    expect(onRevoke).toHaveBeenCalledWith('real-1');
   });
 
   it('revoked items move to a "Revoked" section below the active queue', () => {
@@ -109,6 +135,7 @@ describe('KillList', () => {
         onRevoke={vi.fn()}
         onItemClick={vi.fn()}
         selectedId={null}
+        isDemo={false}
       />
     );
     // Active section should only show active item
@@ -129,6 +156,7 @@ describe('KillList', () => {
         onRevoke={vi.fn()}
         onItemClick={vi.fn()}
         selectedId={null}
+        isDemo={false}
       />
     );
     const item = screen.getByRole('listitem');
@@ -144,6 +172,7 @@ describe('KillList', () => {
         onRevoke={vi.fn()}
         onItemClick={vi.fn()}
         selectedId={null}
+        isDemo={false}
       />
     );
     const item = screen.getByRole('listitem');
@@ -159,6 +188,7 @@ describe('KillList', () => {
         onRevoke={vi.fn()}
         onItemClick={vi.fn()}
         selectedId={null}
+        isDemo={false}
       />
     );
     const item = screen.getByRole('listitem');

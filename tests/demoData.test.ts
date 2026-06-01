@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { DEMO_INTEGRATIONS, getDemoIntegrations } from '../src/lib/demoData';
 
 describe('demoData', () => {
-  it('contains between 8 and 12 integrations', () => {
-    expect(DEMO_INTEGRATIONS.length).toBeGreaterThanOrEqual(8);
-    expect(DEMO_INTEGRATIONS.length).toBeLessThanOrEqual(12);
+  it('contains between 6 and 8 integrations', () => {
+    expect(DEMO_INTEGRATIONS.length).toBeGreaterThanOrEqual(6);
+    expect(DEMO_INTEGRATIONS.length).toBeLessThanOrEqual(8);
   });
 
   it('all integrations have valid required fields', () => {
@@ -30,7 +30,7 @@ describe('demoData', () => {
 
   it('includes integrations with active owners', () => {
     const active = DEMO_INTEGRATIONS.filter((i) => i.owner_active);
-    expect(active.length).toBeGreaterThanOrEqual(3);
+    expect(active.length).toBeGreaterThanOrEqual(2);
   });
 
   it('all IDs are unique', () => {

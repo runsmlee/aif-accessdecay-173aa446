@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { ScoredIntegration } from '../types';
 import { RiskBreakdown } from './RiskBreakdown';
 
@@ -7,6 +8,7 @@ interface KillListItemProps {
   isSelected: boolean;
   onRevoke: (id: string) => void;
   onClick: (id: string) => void;
+  isDemo: boolean;
 }
 
 function getOwnerDisplayName(email: string): string {
@@ -51,8 +53,19 @@ export function KillListItem({
   isSelected,
   onRevoke,
   onClick,
+  isDemo,
 }: KillListItemProps) {
   const severity = getSeverityColors(integration.risk_score);
+  const [showDemoMessage, setShowDemoMessage] = useState(false);
+
+  const handleRevokeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isDemo) {
+      setShowDemoMessage(true);
+      return;
+    }
+    onRevoke(integration.id);
+  };
 
   return (
     <li
@@ -129,10 +142,7 @@ export function KillListItem({
             {!isRevoked && (
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRevoke(integration.id);
-                }}
+                onClick={handleRevokeClick}
                 className="h-8 px-3 text-xs font-medium bg-primary/8 text-primary border border-primary/20 rounded-lg hover:bg-primary hover:text-white hover:border-primary active:scale-[0.97] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-border-focus min-w-[64px]"
                 aria-label={`Revoke ${integration.integration_name}`}
               >
@@ -154,6 +164,16 @@ export function KillListItem({
           </div>
         </div>
       </div>
+
+      {/* Demo revoke message */}
+      {showDemoMessage && isDemo && (
+        <div className="mx-4 sm:mx-5 mb-3 mt-1 px-3 py-2.5 bg-primary/8 border border-primary/15 rounded-lg text-xs text-primary font-medium animate-slide-down flex items-center gap-2">
+          <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Upload your CSV to revoke real integrations
+        </div>
+      )}
 
       {/* Expandable Risk Breakdown */}
       {isSelected && (
