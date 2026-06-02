@@ -33,10 +33,8 @@ export default function App() {
   const handleUpload = useCallback(
     (newIntegrations: Integration[], skippedCount: number) => {
       if (isDemo) {
-        // First upload replaces demo data entirely
         uploadRealData(newIntegrations);
       } else {
-        // Subsequent uploads merge into existing data
         addIntegrations(newIntegrations);
       }
       trackEvent('csv_uploaded', {
@@ -52,7 +50,7 @@ export default function App() {
 
   const handleRevoke = useCallback(
     (id: string) => {
-      if (isDemo) return; // Demo mode: revoke is handled by KillListItem showing message
+      if (isDemo) return;
       revokeIntegration(id);
       trackEvent('integration_revoked', { integration_id: id });
     },
@@ -75,12 +73,32 @@ export default function App() {
     fileInputRef.current?.click();
   }, []);
 
+  const handleFileInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const content = ev.target?.result as string;
+          const result = parseCSV(content);
+          handleUpload(result.integrations, result.skippedCount);
+        } catch {
+          // Error handling done in CSVUploader
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    },
+    [handleUpload]
+  );
+
   const totalActive = integrations.filter((i) => !revokedIds.includes(i.id)).length;
   const totalRevoked = revokedIds.length;
 
   return (
     <div className="min-h-screen bg-surface bg-grid font-sans flex flex-col">
-      {/* Minimal header — brand only */}
+      {/* Minimal header — brand + upload action */}
       <header className="sticky top-0 z-30 border-b border-border bg-surface-overlay backdrop-blur-xl">
         <div className="max-w-4xl mx-auto px-6 h-12 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -92,70 +110,52 @@ export default function App() {
             <h1 className="text-sm font-semibold text-text tracking-tight">AccessDecay</h1>
           </div>
 
-          {/* Status — only show when real data is loaded */}
-          {!isDemo && integrations.length > 0 && (
-            <div className="flex items-center gap-4 text-xs">
-              <CSVUploader onUpload={handleUpload} />
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-severity-success" aria-hidden="true"></span>
-                <span className="text-text-muted">{totalActive} active</span>
-              </div>
-              {totalRevoked > 0 && (
+          {/* Actions — upload always accessible */}
+          <div className="flex items-center gap-4 text-xs">
+            {isDemo ? (
+              <button
+                type="button"
+                onClick={triggerFileUpload}
+                className="group inline-flex items-center gap-2 h-8 px-3 bg-primary/8 text-primary border border-primary/20 rounded-lg hover:bg-primary hover:text-white hover:border-primary active:scale-[0.97] transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-border-focus text-xs font-medium"
+                aria-label="Upload your CSV"
+              >
+                <svg className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                </svg>
+                Upload CSV
+              </button>
+            ) : (
+              <>
+                <CSVUploader onUpload={handleUpload} />
                 <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-text-faint" aria-hidden="true"></span>
-                  <span className="text-text-muted">{totalRevoked} revoked</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-severity-success" aria-hidden="true"></span>
+                  <span className="text-text-muted">{totalActive} active</span>
                 </div>
-              )}
-            </div>
-          )}
+                {totalRevoked > 0 && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-text-faint" aria-hidden="true"></span>
+                    <span className="text-text-muted">{totalRevoked} revoked</span>
+                  </div>
+                )}
+              </>
+            )}
+            {/* Hidden file input for header upload button */}
+            {isDemo && (
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                className="sr-only"
+                aria-label="Upload CSV file"
+                onChange={handleFileInputChange}
+              />
+            )}
+          </div>
         </div>
       </header>
 
-      {/* Main Content — the kill list IS the page */}
+      {/* Main Content — the kill list IS the page, nothing before it */}
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-6">
-        {/* Demo CTA banner — only visible before CSV upload */}
-        {isDemo && (
-          <div className="mb-5 animate-fade-in">
-            <button
-              type="button"
-              onClick={triggerFileUpload}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary/8 border border-primary/15 text-sm font-medium text-primary hover:bg-primary/12 hover:border-primary/25 active:scale-[0.99] transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-border-focus"
-              aria-label="Upload your CSV to see your real kill list"
-            >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
-              </svg>
-              This is a demo. Upload your CSV to see your real kill list.
-            </button>
-            {/* Hidden file input triggered by the CTA */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv"
-              className="sr-only"
-              aria-label="Upload CSV file"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  // Use the CSVUploader's parsing logic via a manual trigger
-                  const reader = new FileReader();
-                  reader.onload = (ev) => {
-                    try {
-                      const content = ev.target?.result as string;
-                      const result = parseCSV(content);
-                      handleUpload(result.integrations, result.skippedCount);
-                    } catch {
-                      // Error handling done in CSVUploader
-                    }
-                  };
-                  reader.readAsText(file);
-                  e.target.value = '';
-                }
-              }}
-            />
-          </div>
-        )}
-
         {/* Skip Notification */}
         {skipNotification !== null && (
           <div

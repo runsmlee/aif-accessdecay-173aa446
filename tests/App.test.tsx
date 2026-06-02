@@ -21,10 +21,10 @@ describe('App', () => {
     expect(screen.queryByText(/no integrations yet/i)).not.toBeInTheDocument();
   });
 
-  it('shows demo CTA banner on first visit', () => {
+  it('shows CSV upload button in header during demo mode', () => {
     render(<App />);
-    expect(screen.getByText(/this is a demo/i)).toBeInTheDocument();
-    expect(screen.getByText(/upload your csv to see your real kill list/i)).toBeInTheDocument();
+    // Header has an upload button when viewing demo data
+    expect(screen.getByRole('button', { name: /upload your csv/i })).toBeInTheDocument();
   });
 
   it('shows departed employee names on critical items', () => {
