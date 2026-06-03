@@ -107,7 +107,7 @@ export default function App() {
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             </div>
-            <h1 className="text-sm font-semibold text-text tracking-tight">AccessDecay</h1>
+            <h1 className="text-sm font-semibold text-text tracking-tight">Dormant SaaS Integration Kill List</h1>
           </div>
 
           {/* Actions — upload always accessible */}
