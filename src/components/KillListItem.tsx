@@ -171,7 +171,7 @@ export function KillListItem({
           <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Upload your CSV to revoke real integrations
+          This is demo data — upload your CSV to see your real risks
         </div>
       )}
 

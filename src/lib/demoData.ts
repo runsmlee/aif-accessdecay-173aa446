@@ -9,10 +9,12 @@ function daysAgo(days: number): string {
 // 7 visceral demo integrations: recognizable SaaS tools with departed employees
 // and real urgency. Top items are Critical — inactive owners, high access, months dormant.
 // Lower items are Medium — active owners, less access, shorter dormancy.
+// Names include indexable security terminology (OAuth token, API key, admin access,
+// read/write scope) so the demo data doubles as SEO-discoverable content.
 export const DEMO_INTEGRATIONS: Integration[] = [
   {
     id: 'demo-slack-bot-token',
-    integration_name: 'Slack Bot Token',
+    integration_name: 'Slack OAuth bot token — full workspace read/write access, abandoned after employee departure',
     service: 'Slack',
     data_access_level: 5,
     integration_depth: 5,
@@ -22,7 +24,7 @@ export const DEMO_INTEGRATIONS: Integration[] = [
   },
   {
     id: 'demo-jira-webhook',
-    integration_name: 'Jira Webhook to deprecated service',
+    integration_name: 'Jira OAuth token (webhook) — full read/write project access, abandoned after employee departure',
     service: 'Jira',
     data_access_level: 4,
     integration_depth: 4,
@@ -32,7 +34,7 @@ export const DEMO_INTEGRATIONS: Integration[] = [
   },
   {
     id: 'demo-notion-workspace',
-    integration_name: 'Notion Workspace Sync',
+    integration_name: 'Notion API key — admin workspace read/write access, orphaned after employee departure',
     service: 'Notion',
     data_access_level: 5,
     integration_depth: 5,
@@ -42,7 +44,7 @@ export const DEMO_INTEGRATIONS: Integration[] = [
   },
   {
     id: 'demo-salesforce-admin',
-    integration_name: 'Salesforce Admin API Token',
+    integration_name: 'Salesforce admin API key — full CRUD access to all CRM objects, abandoned after employee departure',
     service: 'Salesforce',
     data_access_level: 5,
     integration_depth: 4,
@@ -52,7 +54,7 @@ export const DEMO_INTEGRATIONS: Integration[] = [
   },
   {
     id: 'demo-github-org-token',
-    integration_name: 'GitHub Org Admin Token',
+    integration_name: 'GitHub org admin OAuth token — full repository read/write access, former employee credential',
     service: 'GitHub',
     data_access_level: 4,
     integration_depth: 5,
@@ -62,7 +64,7 @@ export const DEMO_INTEGRATIONS: Integration[] = [
   },
   {
     id: 'demo-stripe-webhook',
-    integration_name: 'Stripe Billing Webhook',
+    integration_name: 'Stripe API key (webhook) — read/write billing and payment data access',
     service: 'Stripe',
     data_access_level: 3,
     integration_depth: 3,
@@ -72,7 +74,7 @@ export const DEMO_INTEGRATIONS: Integration[] = [
   },
   {
     id: 'demo-hubspot-crm',
-    integration_name: 'HubSpot CRM Connector',
+    integration_name: 'HubSpot OAuth token — read/write CRM contact and deal access',
     service: 'HubSpot',
     data_access_level: 4,
     integration_depth: 3,

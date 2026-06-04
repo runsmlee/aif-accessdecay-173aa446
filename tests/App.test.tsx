@@ -11,9 +11,9 @@ describe('App', () => {
   it('auto-loads demo data on first visit when no stored data exists', () => {
     render(<App />);
     // Demo integrations with visceral SaaS names should appear immediately
-    expect(screen.getByText('Slack Bot Token')).toBeInTheDocument();
-    expect(screen.getByText('Jira Webhook to deprecated service')).toBeInTheDocument();
-    expect(screen.getByText('Notion Workspace Sync')).toBeInTheDocument();
+    expect(screen.getByText(/Slack OAuth bot token/)).toBeInTheDocument();
+    expect(screen.getByText(/Jira OAuth token \(webhook\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Notion API key/)).toBeInTheDocument();
   });
 
   it('does NOT show empty state when demo data auto-loads', () => {
@@ -56,7 +56,7 @@ describe('App', () => {
     await user.click(revokeButtons[0]);
 
     // Should show the demo message instead of actually revoking
-    expect(screen.getByText(/upload your csv to revoke real integrations/i)).toBeInTheDocument();
+    expect(screen.getByText(/this is demo data.*upload your csv to see your real risks/i)).toBeInTheDocument();
 
     // Active count should NOT decrease in demo mode (no header count shown)
     expect(screen.queryByText(/6 active/i)).not.toBeInTheDocument();

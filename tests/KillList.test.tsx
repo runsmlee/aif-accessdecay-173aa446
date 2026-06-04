@@ -99,7 +99,7 @@ describe('KillList', () => {
     await user.click(screen.getByRole('button', { name: /revoke/i }));
 
     // Should show demo message
-    expect(screen.getByText(/upload your csv to revoke real integrations/i)).toBeInTheDocument();
+    expect(screen.getByText(/this is demo data.*upload your csv to see your real risks/i)).toBeInTheDocument();
     // Should NOT call onRevoke
     expect(onRevoke).not.toHaveBeenCalled();
   });
