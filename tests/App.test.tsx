@@ -11,9 +11,9 @@ describe('App', () => {
   it('auto-loads demo data on first visit when no stored data exists', () => {
     render(<App />);
     // Demo integrations with visceral SaaS names should appear immediately
-    expect(screen.getByText(/Slack OAuth bot token/)).toBeInTheDocument();
-    expect(screen.getByText(/Jira OAuth token \(webhook\)/)).toBeInTheDocument();
-    expect(screen.getByText(/Notion API key/)).toBeInTheDocument();
+    expect(screen.getByText(/Slack OAuth Token/)).toBeInTheDocument();
+    expect(screen.getByText(/Jira OAuth Token/)).toBeInTheDocument();
+    expect(screen.getByText(/Notion API Key/)).toBeInTheDocument();
   });
 
   it('does NOT show empty state when demo data auto-loads', () => {
