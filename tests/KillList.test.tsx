@@ -139,7 +139,7 @@ describe('KillList', () => {
       />
     );
     // Active section should only show active item
-    expect(screen.getByText('Active Queue')).toBeInTheDocument();
+    expect(screen.getByText(/Active Queue/)).toBeInTheDocument();
     expect(screen.getAllByText(/Revoked/).length).toBeGreaterThanOrEqual(1);
     // Active item should not be in revoked section
     const activeItems = screen.getAllByRole('listitem');

@@ -34,13 +34,10 @@ export function KillList({
     <div className="space-y-8">
       {/* Active Queue */}
       <section aria-label="Active integrations queue">
-        <div className="flex items-center gap-3 mb-4">
-          <h2 className="text-xs font-semibold text-text-faint uppercase tracking-widest">
-            Active Queue
+        <div className="flex items-center gap-2 mb-3">
+          <h2 className="text-xs font-medium text-text-faint uppercase tracking-wider">
+            Active Queue · {activeItems.length}
           </h2>
-          <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-primary/10 text-primary text-[11px] font-semibold tabular-nums">
-            {activeItems.length}
-          </span>
         </div>
         {activeItems.length > 0 ? (
           <ul className="space-y-2" role="list">
@@ -78,13 +75,10 @@ export function KillList({
       {/* Revoked Section */}
       {revokedItems.length > 0 && (
         <section aria-label="Revoked integrations">
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-xs font-semibold text-text-faint uppercase tracking-widest">
-              Revoked
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-xs font-medium text-text-faint uppercase tracking-wider">
+              Revoked · {revokedItems.length}
             </h2>
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-text-faint/10 text-text-faint text-[11px] font-semibold tabular-nums">
-              {revokedItems.length}
-            </span>
           </div>
           <ul className="space-y-1" role="list">
             {revokedItems.map((integration) => (

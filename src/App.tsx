@@ -1,5 +1,4 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
-import { CSVUploader } from './components/CSVUploader';
 import { KillList } from './components/KillList';
 import { useIntegrations } from './hooks/useIntegrations';
 import { parseCSV } from './lib/csvParser';
@@ -84,7 +83,7 @@ export default function App() {
           const result = parseCSV(content);
           handleUpload(result.integrations, result.skippedCount);
         } catch {
-          // Error handling done in CSVUploader
+          // Error handling — user can retry
         }
       };
       reader.readAsText(file);
@@ -93,73 +92,40 @@ export default function App() {
     [handleUpload]
   );
 
-  const totalActive = integrations.filter((i) => !revokedIds.includes(i.id)).length;
-  const totalRevoked = revokedIds.length;
-
   return (
     <div className="min-h-screen bg-surface bg-grid font-sans flex flex-col">
-      {/* Minimal header — brand + upload action */}
-      <header className="sticky top-0 z-30 border-b border-border bg-surface-overlay backdrop-blur-xl">
-        <div className="max-w-4xl mx-auto px-6 h-12 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10">
-              <svg className="h-3.5 w-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-            </div>
-            <h1 className="text-sm font-semibold text-text tracking-tight">Dormant SaaS Integration Kill List</h1>
-          </div>
+      {/* h1 retained for accessibility only — no visual scroll space */}
+      <h1 className="sr-only">Dormant SaaS Integration Kill List</h1>
 
-          {/* Actions — upload always accessible */}
-          <div className="flex items-center gap-4 text-xs">
-            {isDemo ? (
-              <button
-                type="button"
-                onClick={triggerFileUpload}
-                className="group inline-flex items-center gap-2 h-8 px-3 bg-primary/8 text-primary border border-primary/20 rounded-lg hover:bg-primary hover:text-white hover:border-primary active:scale-[0.97] transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-border-focus text-xs font-medium"
-                aria-label="Upload your CSV"
-              >
-                <svg className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
-                </svg>
-                Upload CSV
-              </button>
-            ) : (
-              <>
-                <CSVUploader onUpload={handleUpload} />
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-severity-success" aria-hidden="true"></span>
-                  <span className="text-text-muted">{totalActive} active</span>
-                </div>
-                {totalRevoked > 0 && (
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-text-faint" aria-hidden="true"></span>
-                    <span className="text-text-muted">{totalRevoked} revoked</span>
-                  </div>
-                )}
-              </>
-            )}
-            {/* Hidden file input for header upload button */}
-            {isDemo && (
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv"
-                className="sr-only"
-                aria-label="Upload CSV file"
-                onChange={handleFileInputChange}
-              />
-            )}
-          </div>
-        </div>
-      </header>
+      {/* Persistent upload button — top-right corner, non-blocking */}
+      <div className="fixed top-3 right-3 z-40">
+        <button
+          type="button"
+          onClick={triggerFileUpload}
+          className="group inline-flex items-center gap-1.5 h-8 px-2.5 bg-surface-raised/90 backdrop-blur-sm border border-border text-text-muted text-xs font-medium rounded-lg shadow-sm hover:text-text hover:bg-surface-raised hover:border-border-strong active:scale-[0.97] transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-border-focus"
+          aria-label="Upload your CSV"
+        >
+          <svg className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+          </svg>
+          Upload
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv"
+          className="sr-only"
+          aria-label="Upload CSV file"
+          onChange={handleFileInputChange}
+        />
+      </div>
 
-      {/* Main Content — the kill list IS the page, nothing before it */}
-      <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-6">
+      {/* Main Content — kill list is the first visible element */}
+      <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-4">
         {/* Skip Notification */}
         {skipNotification !== null && (
           <div
-            className="mb-5 flex items-center gap-3 px-4 py-3 bg-severity-medium-bg border border-severity-medium/20 rounded-xl text-sm animate-slide-down"
+            className="mb-4 flex items-center gap-3 px-4 py-3 bg-severity-medium-bg border border-severity-medium/20 rounded-xl text-sm animate-slide-down"
             role="status"
           >
             <svg className="h-4 w-4 text-severity-medium shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
