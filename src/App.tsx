@@ -95,7 +95,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-surface bg-grid font-sans flex flex-col">
       {/* h1 retained for accessibility only — no visual scroll space */}
-      <h1 className="sr-only">Dormant SaaS Integration Kill List</h1>
+      <h1 className="sr-only">AccessDecay — Dormant SaaS Integration Kill List</h1>
 
       {/* Persistent upload button — top-right corner, non-blocking */}
       <div className="fixed top-3 right-3 z-40">
