@@ -9,6 +9,12 @@ export default defineConfig({
     sourcemap: false,
   },
   define: {
-    'process.env': {},
+    // Explicitly define NODE_ENV so @vitejs/plugin-react correctly strips
+    // Fast Refresh ($RefreshReg$/$RefreshSig$) in production builds.
+    // Replacing all of process.env with {} can prevent the plugin from
+    // detecting production mode, leaking dev-only code into the bundle.
+    'process.env.NODE_ENV': JSON.stringify(
+      process.env.NODE_ENV === 'production' ? 'production' : 'development'
+    ),
   },
 });
